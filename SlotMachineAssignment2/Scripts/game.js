@@ -7,7 +7,8 @@
 // Game Framework Variables
 var canvas = document.getElementById("canvas");
 var stage;
-var stats;
+var tiles = [];
+var reelContainers = [];
 var assets;
 //Sprite Sheet
 var manifest = [
@@ -45,6 +46,8 @@ var atlas = {
         "red-power-button": [11]
     }
 };
+// GAME CONSTANTS
+var NUM_REELS = 3;
 // Game Variables
 var background;
 var textureAtlas;
@@ -62,6 +65,36 @@ var donkey = 0;
 var strawberry = 0;
 var money = 0;
 var penguin = 0;
+//Player Stats Variables
+var playerMoney = 1000;
+var winnings = 0;
+var jackpot = 5000;
+var turn = 0;
+var playerBet = 0;
+var winNumber = 0;
+var lossNumber = 0;
+var winRatio = 0;
+/* Utility function to reset all fruit tallies */
+function resetFruitTally() {
+    cherry = 0;
+    banana = 0;
+    donkey = 0;
+    cherry = 0;
+    strawberry = 0;
+    money = 0;
+    penguin = 0;
+}
+/* Utility function to reset the player stats */
+function resetAll() {
+    playerMoney = 1000;
+    winnings = 0;
+    jackpot = 5000;
+    turn = 0;
+    playerBet = 0;
+    winNumber = 0;
+    lossNumber = 0;
+    winRatio = 0;
+}
 // Preloader Function
 function preload() {
     assets = new createjs.LoadQueue();
@@ -69,8 +102,6 @@ function preload() {
     // event listener triggers when assets are completely loaded
     assets.on("complete", init, this);
     assets.loadManifest(manifest);
-    //Setup statistics object
-    setupStats();
     //Load Texture atlas
     textureAtlas = new createjs.SpriteSheet(atlas);
 }
@@ -84,30 +115,9 @@ function init() {
     // calling main game function
     main();
 }
-// function to setup stat counting
-function setupStats() {
-    stats = new Stats();
-    stats.setMode(0); // set to fps
-    // align bottom-right
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '330px';
-    stats.domElement.style.top = '10px';
-    document.body.appendChild(stats.domElement);
-}
 // Callback function that creates our Main Game Loop - refreshed 60 fps
 function gameLoop() {
-    stats.begin(); // Begin measuring
     stage.update();
-    stats.end(); // end measuring
-}
-/* Utility function to check if a value falls within a range of bounds */
-function checkRange(value, lowerBounds, upperBounds) {
-    if (value >= lowerBounds && value <= upperBounds) {
-        return value;
-    }
-    else {
-        return !value;
-    }
 }
 /* When this function is called it determines the betLine results.
 e.g. Bar - Orange - Banana */
@@ -145,25 +155,116 @@ function Reels() {
     }
     return betLine;
 }
+/* This function calculates the player's winnings, if any */
+function determineWinnings() {
+    if (donkey == 0) {
+        if (strawberry == 3) {
+            winnings = playerBet * 10;
+        }
+        else if (banana == 3) {
+            winnings = playerBet * 20;
+        }
+        else if (cherry == 3) {
+            winnings = playerBet * 30;
+        }
+        else if (penguin == 3) {
+            winnings = playerBet * 40;
+        }
+        else if (money == 3) {
+            winnings = playerBet * 50;
+        }
+        else if (cherry == 3) {
+            winnings = playerBet * 75;
+        }
+        else if (strawberry == 3) {
+            winnings = playerBet * 100;
+        }
+        else if (penguin == 2) {
+            winnings = playerBet * 2;
+        }
+        else if (money == 2) {
+            winnings = playerBet * 2;
+        }
+        else if (strawberry == 2) {
+            winnings = playerBet * 3;
+        }
+        else if (banana == 2) {
+            winnings = playerBet * 4;
+        }
+        else if (cherry == 2) {
+            winnings = playerBet * 5;
+        }
+        else if (banana == 2) {
+            winnings = playerBet * 10;
+        }
+        else if (penguin == 2) {
+            winnings = playerBet * 20;
+        }
+        else {
+            winnings = playerBet * 1;
+        }
+        if (money == 1) {
+            winnings = playerBet * 5;
+        }
+        winNumber++;
+    }
+    else {
+        lossNumber++;
+    }
+}
 // Callback function that allows me to respond to button click events
-function ButtonClicked(event) {
+function spinButtonClicked(event) {
     createjs.Sound.play("clicked");
     spinResult = Reels();
     symbols = spinResult[0] + " - " + spinResult[1] + " - " + spinResult[2];
-    console.log(symbols);
+    for (var index = 0; index < NUM_REELS; index++) {
+        reelContainers[index].removeAllChildren();
+        tiles[index] = new createjs.Bitmap("assets/images/" + spinResult[index] + ".png");
+        reelContainers[index].addChild(tiles[index]);
+    }
+}
+/* Utility function to check if a value falls within a range of bounds */
+function checkRange(value, lowerBounds, upperBounds) {
+    if (value >= lowerBounds && value <= upperBounds) {
+        return value;
+    }
+    else {
+        return !value;
+    }
+}
+function resetButtonClicked(event) {
+    createjs.Sound.play("clicked");
+    resetAll();
+    resetFruitTally();
+}
+function powerButtonClicked(event) {
+    createjs.Sound.play("clicked");
+    window.close();
 }
 // Our Main Game Function
 function main() {
     console.log("Game is Running");
     background = new createjs.Bitmap(assets.getResult("background"));
     stage.addChild(background);
+    for (var index = 0; index < NUM_REELS; index++) {
+        reelContainers[index] = new createjs.Container();
+        stage.addChild(reelContainers[index]);
+    }
+    reelContainers[0].x = 58;
+    reelContainers[0].y = 175;
+    reelContainers[1].x = 134;
+    reelContainers[1].y = 175;
+    reelContainers[2].x = 210;
+    reelContainers[2].y = 175;
     powerButton = new objects.Button("red-power-button", 242, 47, false);
     stage.addChild(powerButton);
+    powerButton.on("click", powerButtonClicked, this);
     spinButton = new objects.Button("spinButton", 250, 333, false);
     stage.addChild(spinButton);
-    spinButton.on("click", ButtonClicked, this);
+    spinButton.on("click", spinButtonClicked, this);
     resetButton = new objects.Button("resetButton", 37, 333, false);
     stage.addChild(resetButton);
+    spinButton.on("click", resetButtonClicked, this);
     betOneButton = new objects.Button("betOneButton", 110, 333, false);
     stage.addChild(betOneButton);
     betTenButton = new objects.Button("betTenButton", 181, 333, false);

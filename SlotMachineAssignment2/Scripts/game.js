@@ -12,11 +12,11 @@ var stage;
 var tiles = [];
 var reelContainers = [];
 var assets;
-//Sprite Sheet
 var manifest = [
     { id: "background", src: "assets/images/slotmachine.png" },
     { id: "clicked", src: "assets/audio/clicked.wav" }
 ];
+//Sprite Sheet
 var atlas = {
     "images": ["assets/images/atlas.png"],
     "frames": [
@@ -222,10 +222,7 @@ function determineWinnings() {
         showLossMessage();
     }
 }
-function showPlayerStats() {
-    winRatio = winNumber / turn;
-    alert("Jackpot: " + jackpot + "/n" + "Player Money: " + playerMoney + "/n" + "Turn: " + turn + "/n" + "Wins: " + winNumber + " /n" + "Losses: " + lossNumber + "/n" + "Win Ratio: " + (winRatio * 100).toFixed(2) + "%");
-}
+//BetTen Function
 function betTenButtonClicked() {
     playerBet += 10;
     if (playerMoney < playerBet) {
@@ -235,6 +232,7 @@ function betTenButtonClicked() {
     playerBetLabel = new objects.Label(playerBet.toString(), 135, 313, false);
     stage.addChild(playerBetLabel);
 }
+//BetOne function
 function betOneButtonClicked() {
     playerBet += 1;
     if (playerMoney < playerBet) {
@@ -259,7 +257,6 @@ function spinButtonClicked(event) {
     if (playerMoney == 0) {
         if (confirm("You ran out of Money! \nDo you want to play again?")) {
             resetAll();
-            showPlayerStats();
         }
     }
     else if (playerBet > playerMoney) {
@@ -267,6 +264,9 @@ function spinButtonClicked(event) {
     }
     else if (playerBet < 0) {
         alert("All bets must be a positive $ amount.");
+    }
+    else if (playerBet == 0) {
+        alert("Please place a bet first.");
     }
     else if (playerBet <= playerMoney) {
         spinResult = Reels();
@@ -304,6 +304,9 @@ function showWinMessage() {
 function showLossMessage() {
     playerMoney -= playerBet;
     resetFruitTally();
+    stage.removeChild(spinResultLabel);
+    spinResultLabel = new objects.Label(lossNumber.toString(), 235, 313, false);
+    stage.addChild(spinResultLabel);
     stage.removeChild(playerCreditLabel);
     playerCreditLabel = new objects.Label(playerMoney.toString(), 35, 313, false);
     stage.addChild(playerCreditLabel);
@@ -331,7 +334,7 @@ function checkJackPot() {
 function resetButtonClicked(event) {
     createjs.Sound.play("clicked");
     resetAll();
-    //main();
+    main();
 }
 function powerButtonClicked(event) {
     window.open('', '_self', '');
@@ -373,7 +376,7 @@ function main() {
     stage.addChild(jackpotLabel);
     playerBetLabel = new objects.Label(playerBet.toString(), 135, 313, false);
     stage.addChild(playerBetLabel);
-    spinResultLabel = new objects.Label(spinResult.toString(), 235, 313, false);
+    spinResultLabel = new objects.Label(winnings.toString(), 235, 313, false);
     stage.addChild(spinResultLabel);
 }
 //# sourceMappingURL=game.js.map

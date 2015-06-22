@@ -178,13 +178,13 @@ function determineWinnings() {
         else if (penguin == 3) {
             winnings = playerBet * 40;
         }
-        else if (money == 3) {
+        else if (strawberry == 3) {
             winnings = playerBet * 50;
         }
         else if (cherry == 3) {
             winnings = playerBet * 75;
         }
-        else if (strawberry == 3) {
+        else if (money == 3) {
             winnings = playerBet * 100;
         }
         else if (penguin == 2) {

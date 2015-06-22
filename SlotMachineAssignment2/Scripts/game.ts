@@ -194,25 +194,16 @@ function determineWinnings() {
         else if (banana == 3) {
             winnings = playerBet * 20;
         }
-        else if (cherry == 3) {
+        else if (penguin == 3) {
             winnings = playerBet * 30;
         }
-        else if (penguin == 3) {
+        else if (cherry == 3) {
             winnings = playerBet * 40;
         }
         else if (money == 3) {
             winnings = playerBet * 50;
         }
-        else if (cherry == 3) {
-            winnings = playerBet * 75;
-        }
-        else if (strawberry == 3) {
-            winnings = playerBet * 100;
-        }
         else if (penguin == 2) {
-            winnings = playerBet * 2;
-        }
-        else if (money == 2) {
             winnings = playerBet * 2;
         }
         else if (strawberry == 2) {
@@ -224,11 +215,8 @@ function determineWinnings() {
         else if (cherry == 2) {
             winnings = playerBet * 5;
         }
-        else if (banana == 2) {
+        else if (money == 2) {
             winnings = playerBet * 10;
-        }
-        else if (penguin == 2) {
-            winnings = playerBet * 20;
         }
         else {
             winnings = playerBet * 1;
